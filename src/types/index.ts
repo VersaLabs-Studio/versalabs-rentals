@@ -72,4 +72,20 @@ export type {
   OrgSettingsUpdate,
 } from "@/schemas";
 
+export type {
+  SmsMessage,
+  SmsMessageCreate,
+  SmsMessageUpdate,
+  SmsContext,
+  SmsStatus,
+} from "@/schemas";
+
+export type {
+  UtilityBill,
+  UtilityBillCreate,
+  UtilityBillUpdate,
+  UtilityType,
+  UtilityStatus,
+} from "@/schemas";
+
 export * from "./views";

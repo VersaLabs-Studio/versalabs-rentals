@@ -33,6 +33,7 @@ import { COPY } from "@/config/copy";
 import { toast } from "@/components/ui/toast";
 import { STATUS_BADGE } from "@/config/entities";
 
+// DEFERRED: multi-building — re-enable for portfolio tier
 interface BuildingDetailPageProps {
   id: string;
 }

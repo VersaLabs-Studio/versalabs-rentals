@@ -6,7 +6,7 @@ import { readKey, writeKey } from "./create-repository";
 import { buildSeed, type SeedPayload } from "./seed/seed-builder";
 
 const SEED_VERSION_KEY = "rentflow:seed-version";
-const CURRENT_SEED_VERSION = 1;
+const CURRENT_SEED_VERSION = 2; // v2 — single-building + SMS + utilities
 
 export function ensureSeeded(): void {
   if (typeof window === "undefined") return;
@@ -24,6 +24,8 @@ export function ensureSeeded(): void {
   writeKey("rentflow:invoices", seed.invoices);
   writeKey("rentflow:maintenance", seed.maintenance);
   writeKey("rentflow:notifications", seed.notifications);
+  writeKey("rentflow:smsMessages", seed.smsMessages);
+  writeKey("rentflow:utilityBills", seed.utilityBills);
   writeKey(SEED_VERSION_KEY, CURRENT_SEED_VERSION);
 
   // Notify any listening queries to refetch

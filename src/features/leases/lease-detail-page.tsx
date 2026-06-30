@@ -13,6 +13,9 @@ import {
   FileSignature,
   CreditCard,
   CheckCircle2,
+  MessageSquare,
+  Droplets,
+  Trash2,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -25,6 +28,9 @@ import { StatCard } from "@/components/ui/stat-card";
 import { LeaseFormDialog } from "./_components/lease-form-dialog";
 import { useLease, useDeleteLease } from "@/hooks/use-leases";
 import { usePaymentsByLease } from "@/hooks/use-payments";
+import { useUtilityBillsByLease, useDeleteUtilityBill } from "@/hooks/use-utility-bills";
+import { SmsComposer } from "@/features/sms/_components/sms-composer";
+import { UtilityBillForm } from "@/features/utilities/_components/utility-bill-form";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { containerVariants, itemVariants } from "@/lib/motion";
 import { COPY } from "@/config/copy";
@@ -36,8 +42,12 @@ interface Props { id: string; }
 export function LeaseDetailPage({ id }: Props) {
   const { data: lease, isLoading } = useLease(id);
   const { data: payments = [] } = usePaymentsByLease(id);
+  const { data: utilityBills = [] } = useUtilityBillsByLease(id);
   const { mutate: deleteLease } = useDeleteLease();
+  const { mutate: deleteUtilityBill } = useDeleteUtilityBill();
   const [editOpen, setEditOpen] = React.useState(false);
+  const [smsOpen, setSmsOpen] = React.useState(false);
+  const [utilityFormOpen, setUtilityFormOpen] = React.useState(false);
 
   if (isLoading) {
     return (
@@ -88,7 +98,10 @@ export function LeaseDetailPage({ id }: Props) {
             { label: `${lease.tenant.fullName}` },
           ]}
           action={
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <Button variant="outline" onClick={() => setSmsOpen(true)}>
+                <MessageSquare className="h-4 w-4" />{COPY.sms.actions.notifyTenant}
+              </Button>
               <Button variant="outline" onClick={() => setEditOpen(true)}>
                 <Pencil className="h-4 w-4" />{COPY.common.edit}
               </Button>
@@ -205,8 +218,92 @@ export function LeaseDetailPage({ id }: Props) {
               )}
             </CardContent>
           </Card>
+
+          {/* Utilities section — nested under lease */}
+          <Card>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Droplets className="h-4 w-4" />{COPY.utilities.detail.utilitiesSection} ({utilityBills.length})
+                </CardTitle>
+                <CardDescription>Water & electricity bills for this lease</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setUtilityFormOpen(true)}>
+                {COPY.utilities.actions.requestBill}
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {utilityBills.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">{COPY.utilities.detail.noBills}</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {utilityBills.map((ub) => (
+                    <div
+                      key={ub.id}
+                      className="flex items-center justify-between gap-3 p-2.5 rounded-md hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Badge variant={STATUS_BADGE.utilityType[ub.type]} size="sm">
+                          {ub.type === "water" ? "💧" : "⚡"} {COPY.utilities.type[ub.type]}
+                        </Badge>
+                        <div>
+                          <p className="text-sm font-medium">{ub.periodMonth}</p>
+                          <p className="text-xs text-muted-foreground">Due {formatDate(ub.dueDate)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-sm font-semibold tabular-nums">{formatCurrency(ub.amount)}</span>
+                        <Badge variant={STATUS_BADGE.utility[ub.status]} size="sm">{COPY.utilities.status[ub.status]}</Badge>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => {
+                            if (!confirm("Delete this utility bill?")) return;
+                            deleteUtilityBill(ub.id, {
+                              onSuccess: () => toast.success("Utility bill deleted"),
+                              onError: (e) => toast.error(e.message),
+                            });
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
+
+      {/* SMS Composer Dialog */}
+      {lease && (
+        <SmsComposer
+          context="lease_expiry"
+          tenant={{ id: lease.tenant.id, fullName: lease.tenant.fullName, phone: lease.tenant.phone }}
+          relatedId={id}
+          templateValues={{
+            office: `${lease.office.building.name} · ${lease.office.number}`,
+            date: formatDate(lease.endDate),
+          }}
+          open={smsOpen}
+          onOpenChange={setSmsOpen}
+        />
+      )}
+
+      {/* Utility Bill Form Dialog */}
+      {lease && (
+        <UtilityBillForm
+          open={utilityFormOpen}
+          onOpenChange={setUtilityFormOpen}
+          leaseId={id}
+          tenantId={lease.tenantId}
+          officeId={lease.officeId}
+          tenantName={lease.tenant.fullName}
+          tenantPhone={lease.tenant.phone}
+        />
+      )}
 
       <LeaseFormDialog
         open={editOpen}

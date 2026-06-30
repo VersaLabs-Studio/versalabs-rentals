@@ -13,6 +13,8 @@ import {
   CreditCard,
   Receipt,
   Wrench,
+  Gauge,
+  MessageSquare,
   Bell,
   Settings,
   BarChart3,
@@ -36,13 +38,16 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: COPY.nav.dashboard, href: "/dashboard", icon: LayoutDashboard },
-  { label: COPY.nav.buildings, href: "/buildings", icon: Building2 },
+  // DEFERRED: multi-building — re-enable for portfolio tier
+  // { label: COPY.nav.buildings, href: "/buildings", icon: Building2 },
   { label: COPY.nav.offices, href: "/offices", icon: Briefcase },
   { label: COPY.nav.tenants, href: "/tenants", icon: Users },
   { label: COPY.nav.leases, href: "/leases", icon: FileSignature },
   { label: COPY.nav.payments, href: "/payments", icon: CreditCard },
   { label: COPY.nav.invoices, href: "/invoices", icon: Receipt },
+  { label: COPY.nav.utilities, href: "/utilities", icon: Gauge },
   { label: COPY.nav.maintenance, href: "/maintenance", icon: Wrench },
+  { label: COPY.nav.sms, href: "/sms", icon: MessageSquare },
   { label: COPY.nav.notifications, href: "/notifications", icon: Bell, badge: "unread" },
   { label: COPY.nav.reports, href: "/reports", icon: BarChart3 },
   { label: COPY.nav.settings, href: "/settings", icon: Settings },

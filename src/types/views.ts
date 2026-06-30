@@ -96,3 +96,12 @@ export type OccupancyByBuilding = {
   vacant: number;
   rate: number; // 0..1
 };
+
+export type OccupancyByFloor = {
+  floorId: string;
+  floorLabel: string;
+  total: number;
+  occupied: number;
+  vacant: number;
+  rate: number; // 0..1
+};

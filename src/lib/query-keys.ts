@@ -92,6 +92,23 @@ export const OrgSettingsKeys = {
   detail: () => ["OrgSettings", "doc", "singleton"] as const,
 };
 
+export const SmsMessageKeys = {
+  all: () => ["SmsMessage"] as const,
+  lists: () => ["SmsMessage", "list"] as const,
+  list: (filters?: object) => ["SmsMessage", "list", filters] as const,
+  details: () => ["SmsMessage", "doc"] as const,
+  detail: (id: string) => ["SmsMessage", "doc", id] as const,
+};
+
+export const UtilityBillKeys = {
+  all: () => ["UtilityBill"] as const,
+  lists: () => ["UtilityBill", "list"] as const,
+  list: (filters?: object) => ["UtilityBill", "list", filters] as const,
+  details: () => ["UtilityBill", "doc"] as const,
+  detail: (id: string) => ["UtilityBill", "doc", id] as const,
+  byLease: (leaseId: string) => ["UtilityBill", "byLease", leaseId] as const,
+};
+
 /**
  * Invalidate every query for a given entity.
  * Use this on create/update/delete to keep caches in sync.
@@ -107,4 +124,6 @@ export const EntityKeys = {
   MaintenanceRequest: MaintenanceKeys,
   Notification: NotificationKeys,
   OrgSettings: OrgSettingsKeys,
+  SmsMessage: SmsMessageKeys,
+  UtilityBill: UtilityBillKeys,
 } as const;

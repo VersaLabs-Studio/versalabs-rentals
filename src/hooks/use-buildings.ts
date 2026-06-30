@@ -1,5 +1,7 @@
 "use client";
 
+// DEFERRED: multi-building — re-enable for portfolio tier
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BuildingKeys, FloorKeys, OfficeKeys, EntityKeys } from "@/lib/query-keys";
 import {
@@ -11,6 +13,20 @@ import {
 } from "@/lib/mock/repositories/buildings";
 import { buildingCreateSchema, type Building, type BuildingCreate, type BuildingUpdate } from "@/schemas";
 import type { BuildingWithStats, Floor, Office } from "@/types";
+import { ACTIVE_BUILDING_ID } from "@/config/app";
+
+/** Get the single active building (single-building SaaS model). */
+export function useActiveBuilding() {
+  return useQuery<BuildingWithStats | null>({
+    queryKey: [...BuildingKeys.all(), "active"] as const,
+    queryFn: async () => {
+      const { simulateLatency } = await import("@/lib/mock/simulate-latency");
+      await simulateLatency();
+      const all = getBuildingsWithStats();
+      return all.find((b) => b.id === ACTIVE_BUILDING_ID) ?? all[0] ?? null;
+    },
+  });
+}
 
 export function useBuildings(filters?: { search?: string; district?: string }) {
   return useQuery<Building[]>({

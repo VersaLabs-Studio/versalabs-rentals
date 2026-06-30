@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { officeCreateSchema, type OfficeCreate } from "@/schemas";
 import { useCreateOffice, useUpdateOffice } from "@/hooks/use-offices";
-import { useBuildings, useFloorsForBuilding } from "@/hooks/use-buildings";
+import { ACTIVE_BUILDING_ID } from "@/config/app";
+import { useFloorsForBuilding } from "@/hooks/use-buildings";
 import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,7 @@ export function OfficeForm({ defaultValues, editId, onSuccess }: Props) {
   const form = useForm<OfficeCreate>({
     resolver: zodResolver(officeCreateSchema),
     defaultValues: {
-      buildingId: "",
+      buildingId: ACTIVE_BUILDING_ID,
       floorId: "",
       number: "",
       area: 50,
@@ -40,7 +41,6 @@ export function OfficeForm({ defaultValues, editId, onSuccess }: Props) {
     },
   });
   const buildingId = form.watch("buildingId");
-  const { data: buildings = [] } = useBuildings();
   const { data: floors = [] } = useFloorsForBuilding(buildingId || null);
 
   const { mutate: create, isPending: isCreating } = useCreateOffice();
@@ -64,41 +64,21 @@ export function OfficeForm({ defaultValues, editId, onSuccess }: Props) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
-        <Label htmlFor="buildingId">{COPY.offices.fields.building}</Label>
+        <Label htmlFor="floorId">{COPY.offices.fields.floor}</Label>
         <Select
-          value={form.watch("buildingId")}
-          onValueChange={(v) => {
-            form.setValue("buildingId", v);
-            form.setValue("floorId", "");
-          }}
+          value={form.watch("floorId")}
+          onValueChange={(v) => form.setValue("floorId", v)}
         >
-          <SelectTrigger id="buildingId"><SelectValue placeholder="Select building" /></SelectTrigger>
+          <SelectTrigger id="floorId"><SelectValue placeholder="Select floor" /></SelectTrigger>
           <SelectContent>
-            {buildings.map((b) => (
-              <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+            {floors.map((f) => (
+              <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {form.formState.errors.buildingId && (
-          <p className="text-xs text-destructive">{form.formState.errors.buildingId.message}</p>
-        )}
       </div>
+      <input type="hidden" {...form.register("buildingId")} value={ACTIVE_BUILDING_ID} />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="floorId">{COPY.offices.fields.floor}</Label>
-          <Select
-            value={form.watch("floorId")}
-            onValueChange={(v) => form.setValue("floorId", v)}
-            disabled={!buildingId}
-          >
-            <SelectTrigger id="floorId"><SelectValue placeholder="Select floor" /></SelectTrigger>
-            <SelectContent>
-              {floors.map((f) => (
-                <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
         <div className="space-y-1.5">
           <Label htmlFor="number">{COPY.offices.fields.number}</Label>
           <Input id="number" {...form.register("number")} placeholder="3A" />

@@ -18,6 +18,7 @@ import { containerVariants, itemVariants } from "@/lib/motion";
 import { COPY } from "@/config/copy";
 import type { BuildingWithStats } from "@/types";
 
+// DEFERRED: multi-building — re-enable for portfolio tier
 export function BuildingsListPage() {
   const [search, setSearch] = React.useState("");
   const [dialogOpen, setDialogOpen] = React.useState(false);

@@ -2,8 +2,8 @@
  * Aggregations: dashboard metrics + occupancy by building.
  */
 import { readKey } from "./create-repository";
-import type { Building, Office, Lease, Payment, Tenant } from "@/schemas";
-import type { DashboardMetrics, OccupancyByBuilding } from "@/types";
+import type { Building, Office, Lease, Payment, Tenant, Floor } from "@/schemas";
+import type { DashboardMetrics, OccupancyByBuilding, OccupancyByFloor } from "@/types";
 import { parseISO, isValid, differenceInDays, startOfMonth, endOfMonth } from "date-fns";
 import { ymKey } from "./seed/random";
 
@@ -90,6 +90,25 @@ export function getOccupancyByBuilding(): OccupancyByBuilding[] {
     return {
       buildingId: b.id,
       buildingName: b.name,
+      total: own.length,
+      occupied,
+      vacant,
+      rate: own.length === 0 ? 0 : occupied / own.length,
+    };
+  });
+}
+
+/** Occupancy by floor (for the single-building dashboard). */
+export function getOccupancyByFloor(): OccupancyByFloor[] {
+  const floors = readKey<Floor[]>("rentflow:floors", []);
+  const offices = readKey<Office[]>("rentflow:offices", []);
+  return floors.map((f) => {
+    const own = offices.filter((o) => o.floorId === f.id);
+    const occupied = own.filter((o) => o.status === "occupied").length;
+    const vacant = own.filter((o) => o.status === "vacant").length;
+    return {
+      floorId: f.id,
+      floorLabel: f.label,
       total: own.length,
       occupied,
       vacant,

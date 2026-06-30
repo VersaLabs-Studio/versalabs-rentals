@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MoreHorizontal, Pencil, Trash2, Building2, User, Briefcase } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, User, Briefcase } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -40,7 +40,6 @@ export function OfficeTable({ data, isLoading, onEdit, onDelete }: Props) {
           <TableHeader>
             <TableRow>
               <TableHead>Office</TableHead>
-              <TableHead>Building</TableHead>
               <TableHead>Floor</TableHead>
               <TableHead>Tenant</TableHead>
               <TableHead className="text-right">Rate</TableHead>
@@ -52,7 +51,6 @@ export function OfficeTable({ data, isLoading, onEdit, onDelete }: Props) {
             {Array.from({ length: 8 }).map((_, i) => (
               <TableRow key={i}>
                 <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                <TableCell><Skeleton className="h-4 w-28" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-20" /></TableCell>
@@ -72,7 +70,6 @@ export function OfficeTable({ data, isLoading, onEdit, onDelete }: Props) {
         <TableHeader>
           <TableRow>
             <TableHead>Office</TableHead>
-            <TableHead>Building</TableHead>
             <TableHead>Floor</TableHead>
             <TableHead>Tenant</TableHead>
             <TableHead className="text-right">Rate</TableHead>
@@ -94,14 +91,8 @@ export function OfficeTable({ data, isLoading, onEdit, onDelete }: Props) {
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
-                <Link
-                  href={`/buildings/${o.building.id}`}
-                  className="flex items-center gap-1.5 text-sm hover:text-primary transition-colors"
-                >
-                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                  {o.building.name}
-                </Link>
+              <TableCell className="text-sm text-muted-foreground">
+                {o.floor?.label ?? "—"}
               </TableCell>
               <TableCell className="text-sm text-muted-foreground">
                 {o.floor?.label ?? "—"}

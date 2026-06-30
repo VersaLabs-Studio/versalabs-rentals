@@ -11,10 +11,12 @@ import {
 } from "./random";
 import { DISTRICTS } from "@/config/entities";
 import { COMPANIES, STREETS } from "./data-pools";
+import { ACTIVE_BUILDING_ID } from "@/config/app";
 
 /**
  * Generate all base records: org settings, buildings, floors, offices.
- * Offices = ~20 per building × 12 buildings ≈ 240. 70% occupied.
+ * Single-building SaaS model — generates exactly ONE building (ACTIVE_BUILDING_ID).
+ * Offices ≈ 12 floors × 5 offices ≈ 60. 70% occupied.
  */
 export function generateBase() {
   const rand = mulberry32(SEED);
@@ -35,73 +37,64 @@ export function generateBase() {
     updatedAt: baseTs,
   };
 
-  /* 12 buildings, distinct districts, 4–8 floors each */
+  /* Single building — SaaS model */
   const buildings: Building[] = [];
   const floors: Floor[] = [];
   const offices: Office[] = [];
 
-  const BUILDING_NAMES = [
-    "Bole Tower", "Atlas Business Center", "Kirkos Plaza", "Yeka Heights",
-    "Piassa House", "Sarbet Centre", "Meskel Square Tower", "Kazanchis Tower",
-    "CMC Plaza", "Gerji Business Park", "Mexico Square House", "Arat Kilo Centre",
-  ];
+  // Exactly one building with ACTIVE_BUILDING_ID
+  const name = "Bole Tower";
+  const district = "Bole";
+  const totalFloors = 12;
+  const address = `${pick(rand, STREETS)}, ${district}`;
 
-  for (let i = 0; i < BUILDING_NAMES.length; i++) {
-    const name = BUILDING_NAMES[i]!;
-    const district = DISTRICTS[i % DISTRICTS.length]!;
-    const totalFloors = intBetween(rand, 4, 8);
-    const address = `${pick(rand, STREETS)}, ${district}`;
+  const building: Building = {
+    id: ACTIVE_BUILDING_ID,
+    name,
+    address,
+    district,
+    totalFloors,
+    photoSeed: "bole-tower",
+    notes: "Primary building. Premium location. Long-term tenants preferred.",
+    createdAt: isoFromDate(dateMinusDays(now, 500)),
+    updatedAt: baseTs,
+  };
+  buildings.push(building);
 
-    const building: Building = {
+  // Floors (12 levels)
+  for (let level = 1; level <= totalFloors; level++) {
+    const floor: Floor = {
       id: uuid(),
-      name,
-      address,
-      district,
-      totalFloors,
-      photoSeed: name.toLowerCase().replace(/\s+/g, "-"),
-      notes: i % 3 === 0 ? "Premium location. Long-term tenants preferred." : "",
-      createdAt: isoFromDate(dateMinusDays(now, intBetween(rand, 200, 700))),
+      buildingId: building.id,
+      level,
+      label: `Level ${level}`,
+      createdAt: building.createdAt,
       updatedAt: baseTs,
     };
-    buildings.push(building);
+    floors.push(floor);
 
-    // Floors
-    for (let level = 1; level <= totalFloors; level++) {
-      const floor: Floor = {
+    // Offices per floor: 4 to 8
+    const officesOnFloor = intBetween(rand, 4, 8);
+    for (let o = 1; o <= officesOnFloor; o++) {
+      const officeNumber = `${level}${String.fromCharCode(64 + o)}`;
+      const area = intBetween(rand, 25, 180);
+      const baseRate = 8000 + level * 1500 + intBetween(rand, 0, 4000);
+      const r = rand();
+      const status: Office["status"] =
+        r < 0.7 ? "occupied" : r < 0.92 ? "vacant" : "maintenance";
+
+      const office: Office = {
         id: uuid(),
         buildingId: building.id,
-        level,
-        label: level === 0 ? "Ground" : `Level ${level}`,
+        floorId: floor.id,
+        number: officeNumber,
+        area,
+        monthlyRate: round2(baseRate),
+        status,
         createdAt: building.createdAt,
         updatedAt: baseTs,
       };
-      floors.push(floor);
-
-      // Offices per floor: 4 to 8
-      const officesOnFloor = intBetween(rand, 4, 8);
-      for (let o = 1; o <= officesOnFloor; o++) {
-        const officeNumber = `${level}${String.fromCharCode(64 + o)}`; // e.g. 3A, 3B
-        const area = intBetween(rand, 25, 180);
-        // Rate scales with floor level: higher floors cost more.
-        const baseRate = 8000 + level * 1500 + intBetween(rand, 0, 4000);
-        // 70% occupied, 22% vacant, 8% maintenance
-        const r = rand();
-        const status: Office["status"] =
-          r < 0.7 ? "occupied" : r < 0.92 ? "vacant" : "maintenance";
-
-        const office: Office = {
-          id: uuid(),
-          buildingId: building.id,
-          floorId: floor.id,
-          number: officeNumber,
-          area,
-          monthlyRate: round2(baseRate),
-          status,
-          createdAt: building.createdAt,
-          updatedAt: baseTs,
-        };
-        offices.push(office);
-      }
+      offices.push(office);
     }
   }
 

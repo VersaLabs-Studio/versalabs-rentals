@@ -20,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RevenueAreaChart } from "@/components/charts/revenue-area-chart";
 import { OccupancyBarChart } from "@/components/charts/occupancy-bar-chart";
 import { DonutChart } from "@/components/charts/donut-chart";
-import { useDashboardMetrics, useOccupancyByBuilding } from "@/hooks/use-dashboard";
+import { useDashboardMetrics, useOccupancyByFloor } from "@/hooks/use-dashboard";
 import { useRevenueByMonth, usePayments } from "@/hooks/use-payments";
 import { useExpiringLeases } from "@/hooks/use-leases";
 import { formatCurrency, formatDate } from "@/lib/format";
@@ -31,8 +31,17 @@ import { STATUS_BADGE } from "@/config/entities";
 export function DashboardPage() {
   const { data: metrics, isLoading: loadingMetrics } = useDashboardMetrics();
   const { data: revenue = [] } = useRevenueByMonth(12);
-  const { data: occupancy = [] } = useOccupancyByBuilding();
+  const { data: floorOccupancy = [] } = useOccupancyByFloor();
   const { data: payments = [] } = usePayments();
+
+  // Map floor occupancy to chart-compatible format
+  const occupancy = React.useMemo(() => floorOccupancy.map((f) => ({
+    name: f.floorLabel,
+    total: f.total,
+    occupied: f.occupied,
+    vacant: f.vacant,
+    rate: f.rate,
+  })), [floorOccupancy]);
   const { data: expiring = [] } = useExpiringLeases(60);
 
   const recentPayments = React.useMemo(
@@ -116,8 +125,8 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <OccupancyBarChart
           data={occupancy}
-          title={COPY.dashboard.sections.occupancyByBuilding}
-          description="Occupied offices per building"
+          title="Occupancy by floor"
+          description="Occupied offices per floor — Bole Tower"
         />
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between space-y-0">

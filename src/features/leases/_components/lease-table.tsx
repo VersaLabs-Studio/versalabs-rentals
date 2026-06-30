@@ -93,13 +93,10 @@ export function LeaseTable({ data, isLoading, onEdit, onDelete }: Props) {
                 </Link>
               </TableCell>
               <TableCell>
-                <Link
-                  href={`/buildings`}
-                  className="flex items-center gap-1.5 text-sm hover:text-primary"
-                >
+                <div className="flex items-center gap-1.5 text-sm">
                   <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
                   {l.office.building.name} · {l.office.number}
-                </Link>
+                </div>
               </TableCell>
               <TableCell>
                 <Link href={`/leases/${l.id}`} className="flex flex-col text-xs hover:text-primary">

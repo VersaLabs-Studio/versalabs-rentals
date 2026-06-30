@@ -23,9 +23,17 @@ import { CalendarClock, AlertCircle, ArrowRight, BarChart3 } from "lucide-react"
 
 export function ReportsPage() {
   const { data: revenue = [], isLoading: l1 } = useRevenueByMonth(12);
-  const { data: occupancy = [], isLoading: l2 } = useOccupancyByBuilding();
+  const { data: buildingOcc = [], isLoading: l2 } = useOccupancyByBuilding();
   const { data: overdue = [], isLoading: l3 } = useOverduePayments();
   const { data: expiring = [], isLoading: l4 } = useExpiringLeases(60);
+
+  const occupancy = React.useMemo(() => buildingOcc.map((b) => ({
+    name: b.buildingName,
+    total: b.total,
+    occupied: b.occupied,
+    vacant: b.vacant,
+    rate: b.rate,
+  })), [buildingOcc]);
 
   const isLoading = l1 || l2 || l3 || l4;
 

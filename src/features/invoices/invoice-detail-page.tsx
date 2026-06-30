@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Printer, Mail, Phone, Download, Pencil, Building2 } from "lucide-react";
+import { ArrowLeft, Printer, Mail, Phone, Download, Pencil, Building2, MessageSquare } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +19,7 @@ import { containerVariants, itemVariants } from "@/lib/motion";
 import { COPY } from "@/config/copy";
 import { toast } from "@/components/ui/toast";
 import { STATUS_BADGE } from "@/config/entities";
+import { SmsComposer } from "@/features/sms/_components/sms-composer";
 
 interface Props { id: string; }
 
@@ -28,6 +29,7 @@ export function InvoiceDetailPage({ id }: Props) {
   const { mutate: deleteInvoice } = useDeleteInvoice();
   const { mutate: updateInvoice } = useUpdateInvoice();
   const [editOpen, setEditOpen] = React.useState(false);
+  const [smsOpen, setSmsOpen] = React.useState(false);
 
   if (isLoading) {
     return (
@@ -98,6 +100,9 @@ export function InvoiceDetailPage({ id }: Props) {
             ]}
             action={
               <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={() => setSmsOpen(true)}>
+                  <MessageSquare className="h-4 w-4" />{COPY.sms.actions.sendViaSms}
+                </Button>
                 <Button variant="outline" onClick={() => setEditOpen(true)}>
                   <Pencil className="h-4 w-4" />{COPY.common.edit}
                 </Button>
@@ -236,6 +241,22 @@ export function InvoiceDetailPage({ id }: Props) {
         editId={id}
         initialValues={invoice}
       />
+
+      {/* SMS Composer Dialog */}
+      {invoice && (
+        <SmsComposer
+          context="invoice_due"
+          tenant={{ id: invoice.tenant.id, fullName: invoice.tenant.fullName, phone: invoice.tenant.phone }}
+          relatedId={id}
+          templateValues={{
+            invoiceNo: invoice.invoiceNumber,
+            amount: String(invoice.total),
+            date: formatDate(invoice.dueDate),
+          }}
+          open={smsOpen}
+          onOpenChange={setSmsOpen}
+        />
+      )}
     </>
   );
 }

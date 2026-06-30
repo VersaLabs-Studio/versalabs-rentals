@@ -1,2 +1,6 @@
-import { BuildingsListPage } from "@/features/buildings/buildings-list-page";
-export default function Page() { return <BuildingsListPage />; }
+// DEFERRED: multi-building — re-enable for portfolio tier
+import { redirect } from "next/navigation";
+
+export default function Page() {
+  redirect("/dashboard");
+}

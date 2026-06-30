@@ -16,6 +16,8 @@ export const COPY = {
     payments: "Payments",
     invoices: "Invoices",
     maintenance: "Maintenance",
+    utilities: "Utilities",
+    sms: "SMS Center",
     notifications: "Notifications",
     reports: "Reports",
     settings: "Settings",
@@ -49,7 +51,7 @@ export const COPY = {
   },
   dashboard: {
     title: "Dashboard",
-    description: "A live view of your Addis portfolio — leases, revenue, occupancy, and what needs attention today.",
+    description: "A live view of your building — leases, revenue, occupancy, and what needs attention today.",
     metrics: {
       occupancy: "Occupancy rate",
       activeLeases: "Active leases",
@@ -103,7 +105,7 @@ export const COPY = {
   },
   offices: {
     title: "Offices",
-    description: "Every office across every building. Filter by status to see what's vacant.",
+    description: "Every office in your building. Filter by status to see what's vacant.",
     addOffice: "Add office",
     fields: {
       building: "Building",
@@ -257,6 +259,87 @@ export const COPY = {
       description: "No new notifications.",
     },
   },
+  sms: {
+    title: "SMS Center",
+    description: "Sent SMS messages, delivery logs, and mock delivery receipts.",
+    compose: "New SMS",
+    empty: {
+      title: "No SMS messages",
+      description: "Send your first SMS from a lease, invoice, or utility bill.",
+    },
+    fields: {
+      recipient: "Recipient",
+      phone: "Phone number",
+      body: "Message body",
+    },
+    templates: {
+      lease_expiry: "Dear {name}, your lease for office {office} expires on {date}. Please contact the office to renew. — {org}",
+      invoice_due: "Dear {name}, invoice {invoiceNo} of ETB {amount} is due {date}. — {org}",
+      utility_bill: "Dear {name}, your {type} bill of ETB {amount} for {period} is due {date}. — {org}",
+    },
+    status: {
+      queued: "Queued",
+      sending: "Sending…",
+      delivered: "Delivered",
+    },
+    stepper: {
+      queued: "Message queued for delivery",
+      sending: "Transmitting via mock gateway…",
+      delivered: "Delivered ✓",
+      receipt: "Delivery receipt",
+      sentAt: "Sent at",
+    },
+    actions: {
+      notifyTenant: "Notify tenant",
+      sendViaSms: "Send via SMS",
+      send: "Send",
+      sending: "Sending…",
+      close: "Done",
+      track: "Track delivery",
+    },
+    toasts: {
+      sent: "SMS sent successfully",
+      error: "Failed to send SMS",
+    },
+  },
+  utilities: {
+    title: "Utilities",
+    description: "Water and electricity bill requests across all leases.",
+    addRequest: "Request bill",
+    fields: {
+      type: "Utility type",
+      period: "Period (YYYY-MM)",
+      meterPrev: "Previous meter reading",
+      meterCurr: "Current meter reading",
+      amount: "Amount (ETB)",
+      dueDate: "Due date",
+    },
+    type: {
+      water: "Water",
+      electricity: "Electricity",
+    },
+    status: {
+      requested: "Requested",
+      paid: "Paid",
+      overdue: "Overdue",
+    },
+    empty: {
+      title: "No utility bills",
+      description: "Request a utility bill from a lease to get started.",
+    },
+    actions: {
+      requestBill: "Request bill",
+      notifySms: "Notify tenant via SMS",
+    },
+    toasts: {
+      created: "Utility bill created",
+      error: "Failed to create utility bill",
+    },
+    detail: {
+      utilitiesSection: "Utilities",
+      noBills: "No utility bills for this lease.",
+    },
+  },
   reports: {
     title: "Reports",
     description: "Aggregated views across your portfolio.",
@@ -269,9 +352,10 @@ export const COPY = {
   },
   settings: {
     title: "Settings",
-    description: "Organization profile, currency, and demo controls.",
+    description: "Organization profile, currency, building profile, and demo controls.",
     sections: {
       orgProfile: "Organization profile",
+      buildingProfile: "Building profile",
       preferences: "Preferences",
       dangerZone: "Demo controls",
     },
@@ -283,6 +367,10 @@ export const COPY = {
       phone: "Phone",
       vatRate: "VAT rate",
       currency: "Currency",
+      buildingName: "Building name",
+      buildingAddress: "Building address",
+      buildingDistrict: "District",
+      totalFloors: "Total floors",
     },
     actions: {
       save: "Save changes",

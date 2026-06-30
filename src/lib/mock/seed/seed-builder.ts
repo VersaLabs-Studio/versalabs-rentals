@@ -9,11 +9,14 @@ import type {
   MaintenanceRequest,
   Notification,
   OrgSettings,
+  SmsMessage,
+  UtilityBill,
 } from "@/schemas";
 import { generateBase } from "./generate-base";
 import { generateTenantsAndLeases } from "./generate-tenants";
 import { generatePayments } from "./generate-payments";
 import { generateInvoices, generateMaintenanceRequests, generateNotifications } from "./generate-extras";
+import { generateSmsMessages, generateUtilityBills } from "./generate-new-entities";
 
 /**
  * Single entry point that returns every entity's seed payload.
@@ -30,6 +33,8 @@ export interface SeedPayload {
   invoices: Invoice[];
   maintenance: MaintenanceRequest[];
   notifications: Notification[];
+  smsMessages: SmsMessage[];
+  utilityBills: UtilityBill[];
 }
 
 export function buildSeed(): SeedPayload {
@@ -39,6 +44,8 @@ export function buildSeed(): SeedPayload {
   const invoices = generateInvoices(tenants, leases);
   const maintenance = generateMaintenanceRequests(base.offices, tenants);
   const notifications = generateNotifications(leases, payments);
+  const smsMessages = generateSmsMessages(tenants, leases);
+  const utilityBills = generateUtilityBills(leases, tenants, base.offices);
 
   return {
     orgSettings: base.orgSettings,
@@ -51,5 +58,7 @@ export function buildSeed(): SeedPayload {
     invoices,
     maintenance,
     notifications,
+    smsMessages,
+    utilityBills,
   };
 }

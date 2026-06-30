@@ -13,10 +13,16 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { itemVariants } from "@/lib/motion";
-import type { OccupancyByBuilding } from "@/types";
+export interface OccupancyDataPoint {
+  name: string;
+  total: number;
+  occupied: number;
+  vacant: number;
+  rate: number;
+}
 
 interface Props {
-  data: OccupancyByBuilding[];
+  data: OccupancyDataPoint[];
   title?: string;
   description?: string;
   className?: string;
@@ -54,7 +60,7 @@ export function OccupancyBarChart({
                 />
                 <YAxis
                   type="category"
-                  dataKey="buildingName"
+                  dataKey="name"
                   width={110}
                   tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                   axisLine={false}

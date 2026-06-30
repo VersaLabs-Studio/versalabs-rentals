@@ -17,7 +17,6 @@ import {
 import { OfficeTable } from "./_components/office-table";
 import { OfficeFormDialog } from "./_components/office-form-dialog";
 import { useOffices, useDeleteOffice } from "@/hooks/use-offices";
-import { useBuildings } from "@/hooks/use-buildings";
 import { toast } from "@/components/ui/toast";
 import { containerVariants, itemVariants } from "@/lib/motion";
 import { COPY } from "@/config/copy";
@@ -26,24 +25,13 @@ import type { OfficeWithRelations } from "@/types";
 export function OfficesListPage() {
   const [search, setSearch] = React.useState("");
   const [status, setStatus] = React.useState<"all" | "vacant" | "occupied" | "maintenance">("all");
-  const [buildingFilter, setBuildingFilter] = React.useState<string>("all");
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<OfficeWithRelations | null>(null);
-
-  // Build URL-aware filter from query string
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    const url = new URL(window.location.href);
-    const b = url.searchParams.get("building");
-    if (b) setBuildingFilter(b);
-  }, []);
 
   const { data: offices = [], isLoading } = useOffices({
     search: search || undefined,
     status: status === "all" ? undefined : status,
-    buildingId: buildingFilter === "all" ? undefined : buildingFilter,
   });
-  const { data: buildings = [] } = useBuildings();
   const { mutate: deleteOffice } = useDeleteOffice();
 
   const handleDelete = (id: string) => {
@@ -80,17 +68,6 @@ export function OfficesListPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Select value={buildingFilter} onValueChange={setBuildingFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All buildings" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All buildings</SelectItem>
-            {buildings.map((b) => (
-              <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
           <SelectTrigger className="w-40">
             <SelectValue />

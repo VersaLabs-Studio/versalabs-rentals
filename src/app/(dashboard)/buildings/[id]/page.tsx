@@ -1,5 +1,6 @@
-import { BuildingDetailPage } from "@/features/buildings/building-detail-page";
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  return <BuildingDetailPage id={id} />;
+// DEFERRED: multi-building — re-enable for portfolio tier
+import { redirect } from "next/navigation";
+
+export default async function Page() {
+  redirect("/dashboard");
 }

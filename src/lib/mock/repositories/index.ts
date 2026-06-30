@@ -7,3 +7,5 @@ export * from "./invoices";
 export * from "./maintenance";
 export * from "./notifications";
 export * from "./org-settings";
+export * from "./sms-messages";
+export * from "./utility-bills";

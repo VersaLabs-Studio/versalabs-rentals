@@ -8,6 +8,8 @@ import {
   Receipt,
   Wrench,
   Bell,
+  Gauge,
+  MessageSquare,
 } from "lucide-react";
 import type { BadgeProps } from "@/components/ui/badge";
 import { COPY } from "./copy";
@@ -25,7 +27,9 @@ export type EntitySlug =
   | "payments"
   | "invoices"
   | "maintenance"
-  | "notifications";
+  | "notifications"
+  | "smsMessages"
+  | "utilityBills";
 
 export interface EntityMeta {
   slug: EntitySlug;
@@ -101,6 +105,22 @@ export const ENTITY_META: Record<EntitySlug, EntityMeta> = {
     href: "/notifications",
     storageKey: "rentflow:notifications",
   },
+  smsMessages: {
+    slug: "smsMessages",
+    label: "SMS",
+    labelPlural: "SMS Messages",
+    icon: MessageSquare,
+    href: "/sms",
+    storageKey: "rentflow:smsMessages",
+  },
+  utilityBills: {
+    slug: "utilityBills",
+    label: "Utility Bill",
+    labelPlural: "Utility Bills",
+    icon: Gauge,
+    href: "/utilities",
+    storageKey: "rentflow:utilityBills",
+  },
 };
 
 /* Status → badge variant maps per entity */
@@ -112,6 +132,10 @@ export const STATUS_BADGE: {
   invoice: Record<string, BadgeProps["variant"]>;
   maintenance: Record<string, BadgeProps["variant"]>;
   notification: Record<string, BadgeProps["variant"]>;
+  sms: Record<string, BadgeProps["variant"]>;
+  smsContext: Record<string, BadgeProps["variant"]>;
+  utility: Record<string, BadgeProps["variant"]>;
+  utilityType: Record<string, BadgeProps["variant"]>;
 } = {
   office: {
     vacant: "info",
@@ -146,6 +170,26 @@ export const STATUS_BADGE: {
     lease_expiring: "warning",
     payment_overdue: "danger",
     system: "info",
+  },
+  sms: {
+    queued: "muted",
+    sending: "info",
+    delivered: "success",
+  },
+  smsContext: {
+    lease_expiry: "warning",
+    invoice_due: "info",
+    utility_bill: "info",
+    manual: "muted",
+  },
+  utility: {
+    requested: "warning",
+    paid: "success",
+    overdue: "danger",
+  },
+  utilityType: {
+    water: "info",
+    electricity: "warning",
   },
 };
 

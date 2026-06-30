@@ -9,3 +9,5 @@ export * from "./invoice";
 export * from "./maintenance";
 export * from "./notification";
 export * from "./org-settings";
+export * from "./sms-message";
+export * from "./utility-bill";
